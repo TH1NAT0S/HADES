@@ -13,14 +13,14 @@ import random
 import socket
 import requests
 from scapy.all import ARP, Ether, srp
+import os
+import platform
+import pyfiglet
+
 
 attack_duration = 5  # Default attack duration
 target_port = 80  # Default target port
 threads_count = 1  # Default number of threads
-
-import os
-import platform
-import pyfiglet
 
 
 def print_menu():
