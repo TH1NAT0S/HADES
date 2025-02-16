@@ -1,3 +1,8 @@
+#This is a project by sroz9/Zenoxx.
+# I have just copied it,all rights to him
+# For a detailed README please acsess his repo under https://github.com/sroz9/Phoneutria-SSH-Bruteforce-Tool
+# I have not tested this project,excited to see wether it works
+
 import paramiko
 from concurrent.futures import ThreadPoolExecutor
 
