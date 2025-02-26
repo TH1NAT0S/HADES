@@ -61,21 +61,3 @@ def nyx_ai():
 if __name__ == "__main__":
     create_tmux_session()
 
-# Generate requirements.txt file
-deps = """
-rich
-pyfiglet
-langchain
-langchain-ollama
-prompt_toolkit
-curses
-psutil
-tmuxp
-matplotlib
-numpy
-ascii_graph
-scapy
-"""
-with open("requirements.txt", "w") as f:
-    f.write(deps)
-console.print("[bold green]requirements.txt generated! Run 'pip install -r requirements.txt' to install dependencies.[/bold green]")
