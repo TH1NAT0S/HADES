@@ -24,9 +24,9 @@ def system_status(stdscr):
         mem = psutil.virtual_memory()
         net = psutil.net_io_counters()
 
-        stdscr.addstr(2, 2, f"CPU Usage: {cpu_usage}%")
-        stdscr.addstr(3, 2, f"Memory Usage: {mem.percent}%")
-        stdscr.addstr(4, 2, f"Network Sent: {net.bytes_sent / 1024:.2f} KB | Received: {net.bytes_recv / 1024:.2f} KB")
+        stdscr.addstr(2, 2, f"CPU Usage: {cpu_usage}%", curses.color_pair(1))
+        stdscr.addstr(3, 2, f"Memory Usage: {mem.percent}%", curses.color_pair(2))
+        stdscr.addstr(4, 2, f"Network Sent: {net.bytes_sent / 1024:.2f} KB | Received: {net.bytes_recv / 1024:.2f} KB", curses.color_pair(3))
         
         stdscr.refresh()
         time.sleep(1)
@@ -39,12 +39,14 @@ def ascii_graph():
 
 def create_tmux_session():
     os.system("tmux new-session -d -s HADES")
-    os.system("tmux split-window -h -t HADES")
-    os.system("tmux split-window -v -t HADES")
-    os.system("tmux select-layout tiled")
-    os.system("tmux send-keys -t HADES:0.0 'python3 system_monitor.py' C-m")
-    os.system("tmux send-keys -t HADES:0.1 'python3 network_monitor.py' C-m")
-    os.system("tmux send-keys -t HADES:0.2 'python3 ai_interface.py' C-m")
+    os.system("tmux split-window -h")
+    os.system("tmux split-window -v")
+    os.system("tmux select-pane -t 0")
+    os.system("tmux send-keys 'python3 system_monitor.py' C-m")
+    os.system("tmux select-pane -t 1")
+    os.system("tmux send-keys 'python3 network_monitor.py' C-m")
+    os.system("tmux select-pane -t 2")
+    os.system("tmux send-keys 'python3 ai_interface.py' C-m")
     os.system("tmux attach-session -t HADES")
 
 def hacking_animation():
@@ -58,3 +60,22 @@ def nyx_ai():
 
 if __name__ == "__main__":
     create_tmux_session()
+
+# Generate requirements.txt file
+deps = """
+rich
+pyfiglet
+langchain
+langchain-ollama
+prompt_toolkit
+curses
+psutil
+tmuxp
+matplotlib
+numpy
+ascii_graph
+scapy
+"""
+with open("requirements.txt", "w") as f:
+    f.write(deps)
+console.print("[bold green]requirements.txt generated! Run 'pip install -r requirements.txt' to install dependencies.[/bold green]")
