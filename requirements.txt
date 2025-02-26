@@ -1,5 +1,0 @@
-rich
-pyfiglet
-langchain
-langchain-ollama
-prompt_toolkit
