@@ -2,6 +2,7 @@ from rich.console import Console
 from rich.panel import Panel
 import pyfiglet
 import sys
+import subprocess  # <-- This lets us start NYX
 from langchain_ollama import OllamaLLM
 from langchain_core.prompts import ChatPromptTemplate
 
@@ -25,7 +26,7 @@ def show_cover_art():
     art = """
         (\__/)
         (•ㅅ•)  <-- Evil eyes glowing red
-        / \🩸
+        / \\🩸
     """
     console.print(Panel.fit(f"[bold red]{art}[/bold red]", title="[bold red]WELCOME TO HADES[/bold red]"))
 
@@ -39,17 +40,11 @@ def show_main_menu():
     console.print("[bold red][3] SETTINGS[/bold red]")
     console.print("[bold red][4] EXIT[/bold red]\n")
 
-def ai_menu():
-    console.print("\n[bold red]>> Initializing HADES AI...[/bold red]")
-    context = ""
-    console.print("[bold red]Type 'exit' to quit the AI chat.[/bold red]")
-    while True:
-        user_input = console.input("[bold red]You: [/bold red]")
-        if user_input.lower() == "exit":
-            break
-        result = chain.invoke({"context": context, "question": user_input})
-        console.print(f"[bold red]Nyx:[/bold red] {result}")
-        context += f"\nUser: {user_input}\nNyx: {result}"
+def start_nyx():
+    """Starts NYX as a separate process"""
+    console.print("\n[bold red]>> Starting NYX AI...[/bold red]")
+    subprocess.Popen(["python3", "nyx.py"])  # Runs NYX in the background
+    console.print("[bold red]>> NYX is now running![/bold red]\n")
 
 def tools_menu():
     console.print("\n[bold red]>> Stand-Alone Tools Menu[/bold red]")
@@ -79,7 +74,7 @@ while True:
     choice = console.input("[bold red]Select an option: [/bold red]")
 
     if choice == "1":
-        ai_menu()
+        start_nyx()  # Start NYX
     elif choice == "2":
         tools_menu()
     elif choice == "3":
