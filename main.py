@@ -1,32 +1,23 @@
+import os
+import sys
+import time
+import curses
+import psutil
+import subprocess
 from rich.console import Console
 from rich.panel import Panel
+from rich.progress import track
+from rich.text import Text
+from ascii_graph import Pyasciigraph
 import pyfiglet
-import sys
-import subprocess  # <-- This lets us start NYX
-from langchain_ollama import OllamaLLM
-from langchain_core.prompts import ChatPromptTemplate
 
-# Initialize Console and AI Model
 console = Console()
-model = OllamaLLM(model="llama3")
-template = """
-Answer the question below.
-
-Here is the conversation history:
-{context}
-
-Question: {question}
-
-Answer:
-"""
-prompt = ChatPromptTemplate.from_template(template)
-chain = prompt | model
 
 def show_cover_art():
     art = """
         (\__/)
-        (•ㅅ•)  <-- Evil eyes glowing red
-        / \\🩸
+        (o_o)  <-- Evil eyes watching
+        / \🩸
     """
     console.print(Panel.fit(f"[bold red]{art}[/bold red]", title="[bold red]WELCOME TO HADES[/bold red]"))
 
@@ -35,16 +26,36 @@ def show_title():
     console.print(f"[bold red]{ascii_banner}[/bold red]")
 
 def show_main_menu():
-    console.print("\n[bold red][1] START HADES AI[/bold red]")
+    console.print("\n[bold red][1] SYSTEM MONITOR[/bold red]")
     console.print("[bold red][2] STAND-ALONE TOOLS[/bold red]")
     console.print("[bold red][3] SETTINGS[/bold red]")
     console.print("[bold red][4] EXIT[/bold red]\n")
 
-def start_nyx():
-    """Starts NYX as a separate process"""
-    console.print("\n[bold red]>> Starting NYX AI...[/bold red]")
-    subprocess.Popen(["python3", "nyx.py"])  # Runs NYX in the background
-    console.print("[bold red]>> NYX is now running![/bold red]\n")
+def system_monitor(stdscr):
+    curses.curs_set(0)
+    stdscr.nodelay(1)
+    stdscr.timeout(1000)
+    while True:
+        stdscr.clear()
+        cpu_usage = psutil.cpu_percent()
+        mem = psutil.virtual_memory()
+        net = psutil.net_io_counters()
+
+        stdscr.addstr(2, 2, f"CPU Usage: {cpu_usage}%")
+        stdscr.addstr(3, 2, f"Memory Usage: {mem.percent}%")
+        stdscr.addstr(4, 2, f"Network Sent: {net.bytes_sent / 1024:.2f} KB | Received: {net.bytes_recv / 1024:.2f} KB")
+        stdscr.refresh()
+        time.sleep(1)
+
+def ascii_graph():
+    data = [("CPU", psutil.cpu_percent()), ("RAM", psutil.virtual_memory().percent)]
+    graph = Pyasciigraph()
+    for line in graph.graph("System Usage", data):
+        console.print(line)
+
+def hacking_animation():
+    for _ in track(range(10), description="Executing Command..."):
+        time.sleep(0.5)
 
 def tools_menu():
     console.print("\n[bold red]>> Stand-Alone Tools Menu[/bold red]")
@@ -65,6 +76,18 @@ def settings_menu():
     console.print("\n[bold red]>> Settings (Placeholder)[/bold red]")
     console.input("[bold red]Press Enter to return to main menu.[/bold red]")
 
+def create_tmux_session():
+    os.system("tmux new-session -d -s HADES")
+    os.system("tmux split-window -h")
+    os.system("tmux split-window -v")
+    os.system("tmux select-pane -t 0")
+    os.system("tmux send-keys 'python3 system_monitor.py' C-m")
+    os.system("tmux select-pane -t 1")
+    os.system("tmux send-keys 'python3 network_monitor.py' C-m")
+    os.system("tmux select-pane -t 2")
+    os.system("tmux send-keys 'python3 extra_tool.py' C-m")
+    os.system("tmux attach-session -t HADES")
+
 # Main Execution Loop
 show_cover_art()
 show_title()
@@ -72,9 +95,8 @@ show_title()
 while True:
     show_main_menu()
     choice = console.input("[bold red]Select an option: [/bold red]")
-
     if choice == "1":
-        start_nyx()  # Start NYX
+        curses.wrapper(system_monitor)
     elif choice == "2":
         tools_menu()
     elif choice == "3":
