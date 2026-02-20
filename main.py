@@ -16,7 +16,7 @@ console = Console()
 def show_cover_art():
     art = """
         (\__/)
-        (o_o)  <-- Evil eyes watching
+        (o_o) 
         / \🩸
     """
     console.print(Panel.fit(f"[bold red]{art}[/bold red]", title="[bold red]WELCOME TO HADES[/bold red]"))
